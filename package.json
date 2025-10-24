@@ -4,18 +4,27 @@
   "private": true,
   "scripts": {
     "deploy": "wrangler deploy",
-    "dev": "wrangler dev",
-    "start": "wrangler dev",
-    "cf-typegen": "wrangler types"
+    "dev": "wrangler dev --ip 0.0.0.0",
+    "start": "npm run dev",
+    "cf-typegen": "wrangler types",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "wrangler d1 execute good-job-db --local --file=./drizzle/migrations/0000_illegal_cobalt_man.sql && wrangler d1 execute good-job-db --local --file=./drizzle/migrations/0001_curved_nick_fury.sql",
+    "db:migrate:prod": "wrangler d1 execute good-job-db --remote --file=./drizzle/migrations/0000_illegal_cobalt_man.sql && wrangler d1 execute good-job-db --remote --file=./drizzle/migrations/0001_curved_nick_fury.sql",
+    "db:migrate:latest": "wrangler d1 execute good-job-db --local --file=./drizzle/migrations/0001_curved_nick_fury.sql",
+    "db:migrate:latest:prod": "wrangler d1 execute good-job-db --remote --file=./drizzle/migrations/0001_curved_nick_fury.sql",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@tsndr/cloudflare-worker-jwt": "^3.2.0",
     "chanfana": "^2.6.3",
+    "drizzle-orm": "^0.44.7",
     "hono": "^4.6.20",
     "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/node": "22.13.0",
     "@types/service-worker-mock": "^2.0.4",
+    "drizzle-kit": "^0.31.5",
     "wrangler": "^4.45.0"
   }
 }
