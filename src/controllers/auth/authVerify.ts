@@ -1,8 +1,8 @@
 import { OpenAPIRoute } from "chanfana";
 import { z } from "zod";
-import { AppContext } from "../types";
+import { AppContext } from "../../types";
 
-export class TokenVerify extends OpenAPIRoute {
+export class AuthVerify extends OpenAPIRoute {
   schema = {
     tags: ["Auth"],
     summary: "Verify JWT token validity",

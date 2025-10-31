@@ -1,13 +1,13 @@
 import { OpenAPIRoute, Str } from "chanfana";
 import { z } from "zod";
-import { AppContext } from "../types";
-import { UserRepository } from "../repositories/UserRepository";
-import { AuthService } from "../services/AuthService";
+import { AppContext } from "../../types";
+import { UserRepository } from "../../repositories/UserRepository";
+import { AuthService } from "../../services/AuthService";
 
-export class UserRegister extends OpenAPIRoute {
+export class AuthRegister extends OpenAPIRoute {
   schema = {
     tags: ["Auth"],
-    summary: "Register a new user",
+    summary: "Register a new user (First user becomes admin)",
     security: [],
     request: {
       body: {
@@ -23,7 +23,8 @@ export class UserRegister extends OpenAPIRoute {
     },
     responses: {
       "200": {
-        description: "User registered successfully",
+        description:
+          "User registered successfully. The first user to register will automatically become an administrator.",
         content: {
           "application/json": {
             schema: z.object({
@@ -31,6 +32,7 @@ export class UserRegister extends OpenAPIRoute {
               user: z.object({
                 id: z.number(),
                 name: z.string(),
+                isAdmin: z.boolean(),
               }),
               token: z.string(),
             }),
@@ -49,21 +51,33 @@ export class UserRegister extends OpenAPIRoute {
     // Hash de la contraseña
     const hash = await authService.hashPassword(data.body.password);
 
-    // Crear usuario
     const userRepo = new UserRepository(db);
+
+    // Verificar si ya existe algún usuario en el sistema
+    const existingUsers = await userRepo.getAll();
+    const isFirstUser = existingUsers.length === 0;
+
+    // Crear usuario
+    // El primer usuario registrado será automáticamente administrador
     const user = await userRepo.create({
       name: data.body.name,
       hash,
+      isAdmin: isFirstUser, // El primer usuario es admin, los demás no
     });
 
     // Generar token JWT
-    const token = await authService.generateToken(user.id, user.name);
+    const token = await authService.generateToken(
+      user.id,
+      user.name,
+      user.isAdmin
+    );
 
     return {
       success: true,
       user: {
         id: user.id,
         name: user.name,
+        isAdmin: user.isAdmin,
       },
       token,
     };

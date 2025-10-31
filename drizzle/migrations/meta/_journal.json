@@ -15,6 +15,20 @@
       "when": 1761299724222,
       "tag": "0001_curved_nick_fury",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1761328271461,
+      "tag": "0002_eager_satana",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1761329534275,
+      "tag": "0003_known_eddie_brock",
+      "breakpoints": true
     }
   ]
 }

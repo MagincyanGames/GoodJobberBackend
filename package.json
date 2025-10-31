@@ -8,11 +8,13 @@
     "start": "npm run dev",
     "cf-typegen": "wrangler types",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "wrangler d1 execute good-job-db --local --file=./drizzle/migrations/0000_illegal_cobalt_man.sql && wrangler d1 execute good-job-db --local --file=./drizzle/migrations/0001_curved_nick_fury.sql",
-    "db:migrate:prod": "wrangler d1 execute good-job-db --remote --file=./drizzle/migrations/0000_illegal_cobalt_man.sql && wrangler d1 execute good-job-db --remote --file=./drizzle/migrations/0001_curved_nick_fury.sql",
-    "db:migrate:latest": "wrangler d1 execute good-job-db --local --file=./drizzle/migrations/0001_curved_nick_fury.sql",
-    "db:migrate:latest:prod": "wrangler d1 execute good-job-db --remote --file=./drizzle/migrations/0001_curved_nick_fury.sql",
-    "db:studio": "drizzle-kit studio"
+    "db:migrate": "wrangler d1 execute good-job-db --local --file=./drizzle/migrations/0000_illegal_cobalt_man.sql && wrangler d1 execute good-job-db --local --file=./drizzle/migrations/0001_curved_nick_fury.sql && wrangler d1 execute good-job-db --local --file=./drizzle/migrations/0002_eager_satana.sql && wrangler d1 execute good-job-db --local --file=./drizzle/migrations/0003_known_eddie_brock.sql && wrangler d1 execute good-job-db --local --file=./drizzle/migrations/0004_seed_admin_user.sql",
+    "db:migrate:prod": "wrangler d1 execute good-job-db --remote --file=./drizzle/migrations/0000_illegal_cobalt_man.sql && wrangler d1 execute good-job-db --remote --file=./drizzle/migrations/0001_curved_nick_fury.sql && wrangler d1 execute good-job-db --remote --file=./drizzle/migrations/0002_eager_satana.sql && wrangler d1 execute good-job-db --remote --file=./drizzle/migrations/0003_known_eddie_brock.sql && wrangler d1 execute good-job-db --remote --file=./drizzle/migrations/0004_seed_admin_user.sql",
+    "db:reset": "wrangler d1 execute good-job-db --local --command=\"DROP TABLE IF EXISTS transfers; DROP TABLE IF EXISTS good_jobs; DROP TABLE IF EXISTS users;\" && npm run db:migrate",
+    "db:reset:prod": "wrangler d1 execute good-job-db --remote --command=\"DROP TABLE IF EXISTS transfers; DROP TABLE IF EXISTS good_jobs; DROP TABLE IF EXISTS users;\" && npm run db:migrate:prod",
+    "db:studio": "drizzle-kit studio",
+    "migrate": "npm run db:migrate",
+    "migrate:prod": "npm run db:migrate:prod"
   },
   "dependencies": {
     "@tsndr/cloudflare-worker-jwt": "^3.2.0",

@@ -16,10 +16,22 @@
       "database_name": "good-job-db",
       "database_id": "41b972cc-e921-4551-83c0-33997a655fc1"
     }
-  ],
-  "vars": {
-    "JWT_SECRET": "your-super-secret-jwt-key-change-this-in-production"
-  }
+  ]
+  /**
+   * IMPORTANTE: Secretos (JWT_SECRET, etc.)
+   *
+   * ⚠️ NO pongas secretos en "vars" porque se commitean al repositorio!
+   *
+   * Para desarrollo local:
+   *   - Crea un archivo .dev.vars (ver .dev.vars.example)
+   *   - Agrega: JWT_SECRET=tu-secret-aqui
+   *
+   * Para producción:
+   *   - Ejecuta: npx wrangler secret put JWT_SECRET
+   *   - Ingresa el valor cuando te lo pida
+   *
+   * Más información: Ver SECRETOS.md
+   */
   /**
    * Smart Placement
    * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

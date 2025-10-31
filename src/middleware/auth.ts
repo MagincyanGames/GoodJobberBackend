@@ -37,3 +37,39 @@ export function requireAuth(
   }
   return true;
 }
+
+// nuevo: helper que comprueba rol/flag de admin
+export function requireAdmin(
+  c: Context<{ Bindings: Env; Variables: Variables }>
+): boolean {
+  const user = c.get("user");
+  if (!user) {
+    c.status(401);
+    return false;
+  }
+
+  // ajusta según la forma en que guardas el rol en el payload
+  const isAdmin =
+    user.isAdmin === true ||
+    user.role === "admin" ||
+    (Array.isArray(user.roles) && user.roles.includes("admin"));
+
+  if (!isAdmin) {
+    c.status(403);
+    return false;
+  }
+
+  return true;
+}
+
+// nuevo: middleware que bloquea si no es admin (puede usarse en la cadena de la ruta)
+export async function adminMiddleware(
+  c: Context<{ Bindings: Env; Variables: Variables }>,
+  next: Next
+) {
+  if (!requireAdmin(c)) {
+    // opcional: devolver body JSON
+    return c.json({ error: "Forbidden" }, 403);
+  }
+  await next();
+}

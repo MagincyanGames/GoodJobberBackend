@@ -1,63 +1,18 @@
-import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
-import { relations } from "drizzle-orm";
+import { buildSchema, getTable } from "./decorators";
+import { User, GoodJob, Transfer } from "./entities";
 
-// Tabla de usuarios
-export const users = sqliteTable("users", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  name: text("name").notNull(),
-  hash: text("hash").notNull(),
-});
+// Construir el esquema a partir de las entidades decoradas
+const schema = buildSchema([User, GoodJob, Transfer]);
 
-// Tabla de GoodJobs
-export const goodJobs = sqliteTable("good_jobs", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  generatedDate: integer("generated_date", { mode: "timestamp" }).notNull(),
-  currentOwnerId: integer("current_owner_id").references(() => users.id),
-  lastTransferDate: integer("last_transfer_date", { mode: "timestamp" }),
-});
+// Exportar las tablas
+export const users = getTable(User);
+export const goodJobs = getTable(GoodJob);
+export const transfers = getTable(Transfer);
 
-// Tabla de transferencias
-export const transfers = sqliteTable("transfers", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  date: integer("date", { mode: "timestamp" }).notNull(),
-  fromUserId: integer("from_user_id")
-    .notNull()
-    .references(() => users.id),
-  toUserId: integer("to_user_id")
-    .notNull()
-    .references(() => users.id),
-  goodJobId: integer("good_job_id")
-    .notNull()
-    .references(() => goodJobs.id),
-});
+// Exportar las relaciones
+export const usersRelations = schema.relations.usersRelations;
+export const goodJobsRelations = schema.relations.good_jobsRelations;
+export const transfersRelations = schema.relations.transfersRelations;
 
-// Definir relaciones (como en JPA/Hibernate)
-export const usersRelations = relations(users, ({ many }) => ({
-  transfersFrom: many(transfers, { relationName: "from" }),
-  transfersTo: many(transfers, { relationName: "to" }),
-}));
-
-export const goodJobsRelations = relations(goodJobs, ({ many, one }) => ({
-  transfers: many(transfers),
-  currentOwner: one(users, {
-    fields: [goodJobs.currentOwnerId],
-    references: [users.id],
-  }),
-}));
-
-export const transfersRelations = relations(transfers, ({ one }) => ({
-  fromUser: one(users, {
-    fields: [transfers.fromUserId],
-    references: [users.id],
-    relationName: "from",
-  }),
-  toUser: one(users, {
-    fields: [transfers.toUserId],
-    references: [users.id],
-    relationName: "to",
-  }),
-  goodJob: one(goodJobs, {
-    fields: [transfers.goodJobId],
-    references: [goodJobs.id],
-  }),
-}));
+// Exportar las clases de entidades para usar en repositories
+export { User, GoodJob, Transfer };

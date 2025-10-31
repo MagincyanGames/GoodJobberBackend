@@ -2,6 +2,7 @@ import { OpenAPIRoute, Str } from "chanfana";
 import { z } from "zod";
 import { AppContext } from "../types";
 import { GoodJobRepository } from "../repositories/GoodJobRepository";
+import { GoodJob } from "../db/entities";
 
 export class GoodJobCreate extends OpenAPIRoute {
   schema = {
@@ -29,7 +30,6 @@ export class GoodJobCreate extends OpenAPIRoute {
               success: z.boolean(),
               goodJob: z.object({
                 id: z.number(),
-                generatedDate: z.string(),
               }),
             }),
           },
@@ -44,9 +44,7 @@ export class GoodJobCreate extends OpenAPIRoute {
 
     const goodJobRepo = new GoodJobRepository(db);
     const goodJob = await goodJobRepo.create({
-      generatedDate: data.body.generatedDate
-        ? new Date(data.body.generatedDate)
-        : undefined,
+      generatedDate: new Date(),
       initialOwnerId: data.body.initialOwnerId,
     });
 
@@ -58,7 +56,7 @@ export class GoodJobCreate extends OpenAPIRoute {
       goodJob: {
         id: fullGoodJob.id,
         generatedDate: fullGoodJob.generatedDate.toISOString(),
-        currentOwner: fullGoodJob.currentOwner
+        currentOwnerId: fullGoodJob.currentOwner
           ? {
               id: fullGoodJob.currentOwner.id,
               name: fullGoodJob.currentOwner.name,

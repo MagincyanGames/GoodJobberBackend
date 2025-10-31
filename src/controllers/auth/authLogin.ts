@@ -1,10 +1,10 @@
 import { OpenAPIRoute, Str } from "chanfana";
 import { z } from "zod";
-import { AppContext } from "../types";
-import { UserRepository } from "../repositories/UserRepository";
-import { AuthService } from "../services/AuthService";
+import { AppContext } from "../../types";
+import { UserRepository } from "../../repositories/UserRepository";
+import { AuthService } from "../../services/AuthService";
 
-export class UserLogin extends OpenAPIRoute {
+export class AuthLogin extends OpenAPIRoute {
   schema = {
     tags: ["Auth"],
     summary: "Login with credentials",
@@ -31,6 +31,7 @@ export class UserLogin extends OpenAPIRoute {
               user: z.object({
                 id: z.number(),
                 name: z.string(),
+                isAdmin: z.boolean(),
               }),
               token: z.string(),
             }),
@@ -71,13 +72,18 @@ export class UserLogin extends OpenAPIRoute {
       }
 
       // Generar token JWT
-      const token = await authService.generateToken(user.id, user.name);
+      const token = await authService.generateToken(
+        user.id,
+        user.name,
+        user.isAdmin
+      );
 
       return {
         success: true,
         user: {
           id: user.id,
           name: user.name,
+          isAdmin: user.isAdmin,
         },
         token,
       };

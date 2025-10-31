@@ -3,6 +3,7 @@ import jwt from "@tsndr/cloudflare-worker-jwt";
 export interface JWTPayload {
   userId: number;
   name: string;
+  isAdmin: boolean;
   iat?: number;
   exp?: number;
 }
@@ -10,10 +11,15 @@ export interface JWTPayload {
 export class AuthService {
   constructor(private secret: string) {}
 
-  async generateToken(userId: number, name: string): Promise<string> {
+  async generateToken(
+    userId: number,
+    name: string,
+    isAdmin: boolean
+  ): Promise<string> {
     const payload: JWTPayload = {
       userId,
       name,
+      isAdmin,
       iat: Math.floor(Date.now() / 1000),
       exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7, // 7 días
     };

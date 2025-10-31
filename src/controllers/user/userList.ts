@@ -1,7 +1,7 @@
 import { OpenAPIRoute } from "chanfana";
 import { z } from "zod";
-import { AppContext } from "../types";
-import { UserRepository } from "../repositories/UserRepository";
+import { AppContext } from "../../types";
+import { UserRepository } from "../../repositories/UserRepository";
 
 export class UserList extends OpenAPIRoute {
   schema = {
@@ -20,6 +20,7 @@ export class UserList extends OpenAPIRoute {
                   id: z.number(),
                   name: z.string(),
                   hash: z.string(),
+                  isAdmin: z.boolean(),
                 })
               ),
             }),

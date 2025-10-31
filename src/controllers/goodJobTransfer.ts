@@ -2,6 +2,7 @@ import { OpenAPIRoute, Num } from "chanfana";
 import { z } from "zod";
 import { AppContext } from "../types";
 import { GoodJobRepository } from "../repositories/GoodJobRepository";
+import { UserRepository } from "../repositories/UserRepository";
 
 export class GoodJobTransfer extends OpenAPIRoute {
   schema = {
@@ -13,9 +14,8 @@ export class GoodJobTransfer extends OpenAPIRoute {
         content: {
           "application/json": {
             schema: z.object({
-              goodJobId: z.number(),
-              fromUserId: z.number(),
-              toUserId: z.number(),
+              goodJobId: z.number().int().positive().optional(),
+              toUserId: z.number().int().positive(),
             }),
           },
         },
@@ -62,28 +62,24 @@ export class GoodJobTransfer extends OpenAPIRoute {
       );
     }
 
-    // Verificar que el usuario autenticado es el propietario (fromUserId)
-    if (user.userId !== data.body.fromUserId) {
-      return c.json(
-        {
-          success: false,
-          message: "You can only transfer GoodJobs that you own",
-        },
-        403
-      );
-    }
-
     const goodJobRepo = new GoodJobRepository(db);
+    const userRepo = new UserRepository(db);
+    const gjid =
+      data.body.goodJobId ??
+      (await goodJobRepo.getReceivedBeforeGoodJobs(user.userId)).id;
+    // Verificar que el usuario de destino existe
+    await userRepo.getById(data.body.toUserId);
 
     // Transferir (esto actualiza automáticamente el propietario actual)
     const transfer = await goodJobRepo.addTransfer({
-      goodJobId: data.body.goodJobId,
-      fromUserId: data.body.fromUserId,
+      goodJobId: gjid,
+
+      fromUserId: user.userId,
       toUserId: data.body.toUserId,
     });
 
     // Obtener el propietario actual (ahora es rápido, sin buscar en transferencias)
-    const currentOwner = await goodJobRepo.getCurrentOwner(data.body.goodJobId);
+    const currentOwner = await goodJobRepo.getCurrentOwner(gjid);
 
     return {
       success: true,
